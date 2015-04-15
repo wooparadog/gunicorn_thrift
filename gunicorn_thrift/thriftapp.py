@@ -47,15 +47,20 @@ class ThriftApplication(Application):
         if self.cfg.service_register_mod:
             service_register_mod = utils.load_obj(
                 self.cfg.service_register_mod)
-            service_register_mod.servier_register_listener(
-                self, self.cfg.service_register_conf)
+
+            service_register = service_register_mod(
+                self.cfg.service_register_conf)
+
             instances = []
             for i in self.cfg.address:
                 port = i[1]
                 instances.append({'port': {"main": port},
                                   'meta': None,
                                   'state': 'up'})
-            service_register_mod.register_to_huskar(self, instances)
+
+            service_register.register_instances(instances)
+            self.service_register = service_register
+
         super(ThriftApplication, self).run()
 
 
